@@ -1,0 +1,286 @@
+{
+ "buyer": {
+  "name": "Northwind Manufacturing Pvt Ltd",
+  "gstin": "27AAACN4455P1Z3",
+  "address": "Plot 14, MIDC Bhosari, Pune 411026"
+ },
+ "vendors": [
+  {
+   "id": "V-1001",
+   "name": "Apex Steel Supplies Pvt Ltd",
+   "gstin": "27AABCA1234F1Z5",
+   "terms": "Net 30",
+   "status": "active",
+   "aliases": [
+    "Apex Steel"
+   ]
+  },
+  {
+   "id": "V-1002",
+   "name": "BrightPath Logistics LLP",
+   "gstin": "07AAJFB5678K1Z2",
+   "terms": "Net 15",
+   "status": "active",
+   "aliases": [
+    "BrightPath"
+   ]
+  },
+  {
+   "id": "V-1003",
+   "name": "Coreline Electricals",
+   "gstin": "09AAFFC4321M1Z8",
+   "terms": "Net 30",
+   "status": "active",
+   "aliases": [
+    "Coreline"
+   ]
+  },
+  {
+   "id": "V-1004",
+   "name": "Delta Office Solutions",
+   "gstin": "29AADCD8765Q1Z1",
+   "terms": "Net 45",
+   "status": "active",
+   "aliases": [
+    "Delta Office"
+   ]
+  },
+  {
+   "id": "V-1005",
+   "name": "Evergreen Packaging Industries",
+   "gstin": "24AACCE2468R1Z4",
+   "terms": "Net 30",
+   "status": "active",
+   "aliases": []
+  },
+  {
+   "id": "V-1006",
+   "name": "Nimbus IT Services",
+   "gstin": "29AAGCN1357T1Z6",
+   "terms": "Net 30",
+   "status": "blocked",
+   "aliases": [],
+   "note": "Suspended after bank-detail mismatch, Sep 2026"
+  }
+ ],
+ "pos": [
+  {
+   "po": "PO-2026-0398",
+   "vendor_id": "V-1001",
+   "date": "2026-09-22",
+   "status": "closed",
+   "tax_rate": 18,
+   "lines": [
+    {
+     "sku": "MA-40-5",
+     "desc": "MS Angle 40x40x5mm",
+     "unit": "nos",
+     "qty": 80,
+     "unit_price": 960,
+     "qty_received": 80,
+     "qty_invoiced": 80
+    }
+   ]
+  },
+  {
+   "po": "PO-2026-0412",
+   "vendor_id": "V-1001",
+   "date": "2026-10-14",
+   "status": "open",
+   "tax_rate": 18,
+   "lines": [
+    {
+     "sku": "RB-12",
+     "desc": "MS Round Bar 12mm",
+     "unit": "nos",
+     "qty": 40,
+     "unit_price": 4250,
+     "qty_received": 40,
+     "qty_invoiced": 0
+    },
+    {
+     "sku": "FL-50-6",
+     "desc": "MS Flat 50x6mm",
+     "unit": "nos",
+     "qty": 60,
+     "unit_price": 1180,
+     "qty_received": 60,
+     "qty_invoiced": 0
+    },
+    {
+     "sku": "SVC-CH",
+     "desc": "Cutting & handling charges",
+     "unit": "lot",
+     "qty": 1,
+     "unit_price": 6500,
+     "qty_received": 1,
+     "qty_invoiced": 0
+    }
+   ]
+  },
+  {
+   "po": "PO-2026-0377",
+   "vendor_id": "V-1002",
+   "date": "2026-09-02",
+   "status": "open",
+   "tax_rate": 18,
+   "lines": [
+    {
+     "sku": "FTL-PUN-CHE",
+     "desc": "FTL freight Pune to Chennai (32ft MXL)",
+     "unit": "trips",
+     "qty": 20,
+     "unit_price": 38500,
+     "qty_received": 18,
+     "qty_invoiced": 12
+    },
+    {
+     "sku": "LU-CHG",
+     "desc": "Loading / unloading charges",
+     "unit": "trips",
+     "qty": 20,
+     "unit_price": 1500,
+     "qty_received": 18,
+     "qty_invoiced": 12
+    }
+   ]
+  },
+  {
+   "po": "PO-2026-0421",
+   "vendor_id": "V-1003",
+   "date": "2026-10-20",
+   "status": "open",
+   "tax_rate": 18,
+   "lines": [
+    {
+     "sku": "LED-2X2-40",
+     "desc": "LED panel light 2x2 40W",
+     "unit": "nos",
+     "qty": 120,
+     "unit_price": 1350,
+     "qty_received": 120,
+     "qty_invoiced": 0
+    },
+    {
+     "sku": "MCB-32-DP",
+     "desc": "MCB 32A double pole",
+     "unit": "nos",
+     "qty": 60,
+     "unit_price": 640,
+     "qty_received": 60,
+     "qty_invoiced": 0
+    }
+   ]
+  },
+  {
+   "po": "PO-2026-0433",
+   "vendor_id": "V-1003",
+   "date": "2026-10-28",
+   "status": "open",
+   "tax_rate": 18,
+   "lines": [
+    {
+     "sku": "CAB-4C-16",
+     "desc": "Armoured cable 4C x 16 sq mm",
+     "unit": "m",
+     "qty": 300,
+     "unit_price": 410,
+     "qty_received": 300,
+     "qty_invoiced": 0
+    },
+    {
+     "sku": "GL-25",
+     "desc": "Cable gland 25mm",
+     "unit": "nos",
+     "qty": 100,
+     "unit_price": 85,
+     "qty_received": 100,
+     "qty_invoiced": 0
+    }
+   ]
+  },
+  {
+   "po": "PO-2026-0450",
+   "vendor_id": "V-1004",
+   "date": "2026-10-30",
+   "status": "open",
+   "tax_rate": 18,
+   "lines": [
+    {
+     "sku": "CH-ERG",
+     "desc": "Ergonomic office chair",
+     "unit": "nos",
+     "qty": 25,
+     "unit_price": 6800,
+     "qty_received": 25,
+     "qty_invoiced": 0
+    },
+    {
+     "sku": "PAP-A4-75",
+     "desc": "A4 copier paper 75gsm (box of 5 reams)",
+     "unit": "box",
+     "qty": 40,
+     "unit_price": 1300,
+     "qty_received": 40,
+     "qty_invoiced": 0
+    },
+    {
+     "sku": "WB-4X3",
+     "desc": "Whiteboard 4x3 ft",
+     "unit": "nos",
+     "qty": 6,
+     "unit_price": 2450,
+     "qty_received": 6,
+     "qty_invoiced": 0
+    }
+   ]
+  },
+  {
+   "po": "PO-2026-0455",
+   "vendor_id": "V-1005",
+   "date": "2026-11-02",
+   "status": "open",
+   "tax_rate": 18,
+   "lines": [
+    {
+     "sku": "CB-5PLY",
+     "desc": "5-ply corrugated box 18x12x12",
+     "unit": "nos",
+     "qty": 2000,
+     "unit_price": 46,
+     "qty_received": 2000,
+     "qty_invoiced": 0
+    }
+   ]
+  }
+ ],
+ "ledger": [
+  {
+   "invoice_no": "INV-AS-1152",
+   "vendor_id": "V-1001",
+   "po": "PO-2026-0398",
+   "date": "2026-10-08",
+   "total": 90624.0,
+   "status": "Paid",
+   "paid_on": "2026-11-06"
+  },
+  {
+   "invoice_no": "INV-BPL-0741",
+   "vendor_id": "V-1002",
+   "po": "PO-2026-0377",
+   "date": "2026-10-15",
+   "total": 566400.0,
+   "status": "Paid",
+   "paid_on": "2026-10-29"
+  },
+  {
+   "invoice_no": "EPI/2026/311",
+   "vendor_id": "V-1005",
+   "po": "PO-2026-0302",
+   "date": "2026-08-19",
+   "total": 64900.0,
+   "status": "Paid",
+   "paid_on": "2026-09-18"
+  }
+ ]
+}
