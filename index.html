@@ -547,9 +547,12 @@ async function process(bytes, name, mime, sampleId) {
       const key = normInv(inv.invoice_number);
       const prior = [
         ...S.ledger.map(l => ({src: "Ledger", no: l.invoice_no, vendorId: l.vendor_id, date: l.date, total: l.total, status: l.status + (l.paid_on ? ` on ${fmtDate(l.paid_on)}` : ""), hash: null})),
-        ...S.runs.filter(r => r.id !== run.id && r.status === "done" && r.decision && r.decision.kind !== "reject" && r.inv && !r.ledgered)
+        ...S.runs.filter(r => r.id !== run.id && r.status === "done" && r.decision && r.decision.kind === "approve" && r.inv && !r.ledgered)
           .map(r => ({src: "Run " + r.id, no: r.inv.invoice_number, vendorId: r.vendorId, date: r.inv.invoice_date, total: r.inv.total, status: r.decision.kind === "approve" ? "Approved" : "On hold in exception queue", hash: r.hash}))];
-      const sameFile = S.runs.find(r => r.id !== run.id && r.hash === run.hash && r.status === "done" && r.decision && r.decision.kind !== "reject");
+      const sameFile = S.runs.find(r => r.id !== run.id && r.hash === run.hash && r.status === "done" && r.decision && r.decision.kind === "approve");
+      // an invoice sitting in the exception queue may be re-run after a fix (PO amended, rule changed): re-evaluate it instead of calling it a duplicate
+      const queued = key && S.runs.filter(r => r.id !== run.id && r.status === "done" && r.decision?.kind === "hold" && r.vendorId === run.vendorId && normInv(r.inv?.invoice_number) === key && !r.superseded).pop();
+      if (queued) { queued.superseded = run.id; chk(run, "duplicate", "info", "REPROCESS", "Re-processing an invoice from the exception queue", `${inv.invoice_number} was put on hold in run ${queued.id}; this run re-evaluates it and replaces that decision.`); }
       const exact = key && prior.find(p => p.vendorId === run.vendorId && normInv(p.no) === key);
       const hit = exact || (sameFile && {src: "Run " + sameFile.id, no: sameFile.inv?.invoice_number, total: sameFile.inv?.total, date: sameFile.inv?.invoice_date, status: "Same file already processed"});
       const n = prior.filter(p => p.vendorId === run.vendorId).length;
@@ -562,7 +565,7 @@ async function process(bytes, name, mime, sampleId) {
       }
       const soft = prior.find(p => p.vendorId === run.vendorId && near(p.total, inv.total, 1) && Math.abs(daysBetween(p.date, inv.invoice_date || todayISO())) <= 45);
       if (soft) { chk(run, "duplicate", "hold", "POSSIBLE_DUP", "Possible duplicate: same vendor, same amount", `${soft.no} (${fmtDate(soft.date)}) has the same total ${inr(soft.total)} within 45 days.`); return {state: "warn", summary: `Same amount as ${soft.no} within 45 days`}; }
-      return {state: "pass", summary: `No match across ${n} earlier invoice${n === 1 ? "" : "s"} from this vendor (number normalised, file fingerprint, amount + date window)`};
+      return {state: "pass", summary: (queued ? `Re-evaluating ${inv.invoice_number} from the exception queue (run ${queued.id}). ` : "") + `No match across ${n} earlier invoice${n === 1 ? "" : "s"} from this vendor (number normalised, file fingerprint, amount + date window)`};
     });
     if (dres.state === "fail") { skipRest(run, "po", "Skipped — duplicate"); return finish(run); }
 
@@ -736,7 +739,8 @@ function renderStatus() {
 }
 
 function renderDashboard() {
-  const runs = S.runs.filter(r => r.status === "done").slice().reverse();
+  const all = S.runs.filter(r => r.status === "done").slice().reverse();
+  const runs = all.filter(r => !r.superseded); // a re-evaluated invoice counts once, with its latest decision
   const c = k => runs.filter(r => r.decision.kind === k).length;
   const n = runs.length, ap = c("approve"), ho = c("hold"), rj = c("reject");
   const val = k => runs.filter(r => r.decision.kind === k).reduce((a, r) => a + (r.decision.amount || 0), 0);
@@ -754,7 +758,7 @@ function renderDashboard() {
     </div>
     <div class="split">
       <div class="panel"><div class="ph"><h2>Run history</h2><span class="note">Click a row to open its log</span></div>${n ? `<div class="tbl flush"><table><thead><tr><th>Run</th><th>Time</th><th>Vendor</th><th>Invoice</th><th class="r">Amount</th><th>Decision</th><th>Main reason</th></tr></thead><tbody>
-        ${runs.map(r => `<tr class="click" data-open="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td class="mono" style="white-space:nowrap">${new Date(r.started).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit"})}</td><td>${esc(vendorById(r.vendorId)?.name || r.inv?.vendor_name || r.name)}</td><td class="mono">${esc(r.inv?.invoice_number || "—")}</td><td class="r mono">${inr(r.decision.amount)}</td><td><span class="badge ${r.decision.kind}">${KIND[r.decision.kind]}</span></td><td class="muted">${esc((r.decision.issues[0] && reasonOf(r.decision.issues[0])) || (r.poInferred ? "PO inferred, all checks passed" : "All checks passed"))}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty"><h3>No invoices processed yet</h3><p>Process one from the inbox and it appears here with its decision.</p></div>`}</div>
+        ${all.map(r => `<tr class="click" data-open="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td class="mono" style="white-space:nowrap">${new Date(r.started).toLocaleTimeString("en-IN", {hour: "2-digit", minute: "2-digit"})}</td><td>${esc(vendorById(r.vendorId)?.name || r.inv?.vendor_name || r.name)}</td><td class="mono">${esc(r.inv?.invoice_number || "—")}</td><td class="r mono">${inr(r.decision.amount)}</td><td><span class="badge ${r.decision.kind}">${KIND[r.decision.kind]}</span></td><td class="muted">${r.superseded ? "Superseded by re-run " + r.superseded : ""}${r.superseded ? "" : esc((r.decision.issues[0] && reasonOf(r.decision.issues[0])) || (r.poInferred ? "PO inferred, all checks passed" : "All checks passed"))}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty"><h3>No invoices processed yet</h3><p>Process one from the inbox and it appears here with its decision.</p></div>`}</div>
       <div class="panel"><div class="ph"><h2>Exceptions by reason</h2></div><div class="pb stack">${rs.length ? rs.map(([t, k]) => `<div class="rl"><span>${esc(t)}</span><span class="mono">${k}</span><div class="track"><i style="width:${k / rmax * 100}%"></i></div></div>`).join("") : `<p class="note">None yet.</p>`}</div></div>
     </div></div>`;
   $("#reset").onclick = () => { if ($("#reset").dataset.armed) { S = freshState(); currentRunId = null; save(); renderAll(); toast("Demo data reset"); } else { $("#reset").dataset.armed = 1; $("#reset").textContent = "Click again to confirm"; } };
